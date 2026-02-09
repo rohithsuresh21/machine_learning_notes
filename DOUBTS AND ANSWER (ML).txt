@@ -1,0 +1,43 @@
+DOUBTS AND ANSWER (ML)
+
+1. Why do we drop price_in_lakhs?
+In Machine Learning, we have Features (the questions) and the Target (the answer).
+
+Imagine taking a math test where the answer is already written at the bottom of the question. You wouldn't learn any math; you’d just look at the answer!
+
+If we leave price_in_lakhs inside the X (Features) variable, the model will see the answer while it's "studying." By dropping it from X, we force the model to find the relationship between the house size/location and the price.
+
+2. What is random_state=42?
+When we use train_test_split, the computer shuffles your data like a deck of cards before picking 80% for training.
+
+If you run the code again, the computer will shuffle differently, and you’ll get a slightly different "Predicted Price."
+
+By setting random_state=42, you are "locking" the shuffle. It ensures that every time you run the code, you get the exact same split.
+
+Why 42? It’s a famous joke in the science-fiction community (from The Hitchhiker's Guide to the Galaxy), but you can use any number (0, 1, 100). It just acts as a seed for the randomizer.
+
+3. Why the f in print(f"...")?
+This is called an F-String (Formatted String). It was introduced in Python 3.6 to make printing variables much easier.
+
+Without f: You have to do this: print("The price is " + str(price)) (clunky and annoying).
+
+With f: You can put variables directly inside the text using curly brackets: print(f"The price is {price}").
+
+It tells Python: "Hey, look inside the curly brackets and treat whatever is in there as a variable, not just plain text."
+
+4. What is :.2f?
+This is a formatting instruction for numbers.
+
+: means "start formatting here."
+
+.2 means "show only 2 digits after the decimal point."
+
+f means "treat this as a Float (a decimal number)."
+
+Example: If the model predicts 150.3333333333333, using {price:.2f} will neatly print: 150.33. It makes your output look professional instead of showing 10 unnecessary decimal places!
+
+5.what is coefficient and frequencies?
+While the Target is the answer key and Features are the questions, the Coefficients tell you how much each question matters to the final answer.
+
+frequencies refers to the actual counts of how many times a specific event or category occurs in your data.
+Think of it as a tally system used to compare what you actually saw (Observed) versus what you mathematically expected to see (Expected) if there was no relationship between your features and the target.
