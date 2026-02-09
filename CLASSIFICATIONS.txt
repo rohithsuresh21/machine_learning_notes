@@ -1,0 +1,84 @@
+CLASSIFICATIONS
+
+In Regression (what we did earlier), we predicted a continuous number like 185 runs or ₹50 Lakhs. In Classification, we are predicting a Label or Category. It’s like sorting mail into "Spam" or "Important," or deciding if a batsman is "Out" or "Not Out."
+
+1. The Real-World Mental Model
+Imagine you are a scout for an IPL team. You look at a player and ask: "Is this player a Power Hitter or a Technical Batsman?" You aren't predicting their score; you are putting them in a bucket. That is Classification.
+
+2. The Logic: Decision Trees
+The most intuitive way to learn classification is through a Decision Tree. It works like a flowchart of "Yes/No" questions.
+
+Root Node: The very first question (e.g., Is the Strike Rate > 140?).
+
+Branches: The "Yes" or "No" paths.
+
+Leaf Nodes: The final answer (The Category).
+
+3. How do we check if we are right?
+In Regression, we used MAE (error in runs). In Classification, we use Accuracy Score.
+
+Accuracy = (Correct Predictions) / (Total Predictions)
+
+If you predict 10 matches and get 8 right, your accuracy is 80%.
+
+sample code
+--------------------------------------------------------
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# dataset
+data= {'target': [160, 200, 150, 220, 140, 190, 210, 130],
+    'wickets_lost': [2, 7, 1, 8, 2, 5, 9, 1],
+    'overs_left': [10, 2, 8, 3, 12, 5, 1, 15],
+    'result': [1, 0, 1, 0, 1, 0, 0, 1]
+}
+df=pd.DataFrame(data)
+
+#split into features and target x and y
+X=df.drop('result',axis=1) #feature
+y=df['result']    #target
+
+#we use Decission Tree Classifier instead of Linear Regression
+clf=DecisionTreeClassifier()
+clf.fit(X,y)
+
+new_match=[[180,4,6]] #predict for a match where target is 180, 4 wickets lost and 6 overs left
+prediction= clf.predict(new_match)
+
+if prediction[0]==1:
+    print("The team is likely to WIN the match.")
+else:
+    print("The team is likely to LOSE the match.")
+
+---------------------------------------------------------------
+
+why we drop result?
+why we result as target?
+
+answer:
+
+1. The "Features" (X)
+
+Definition: These are the input variables or "questions" the model uses to learn.
+
+In our Code: Target Runs, Wickets Lost, and Overs Left.
+
+Action: We use .drop('result', axis=1) to remove the answer from this group.
+
+Goal: To give the model the "match situation" so it can look for patterns without knowing the final outcome.
+
+2. The "Target" (y)
+
+Definition: This is the output variable or the "answer" we want to predict.
+
+In our Code: The Result column (1 for Win, 0 for Loss).
+
+Action: We assign this single column to the variable y.
+
+Goal: This serves as the "Label." During training, the model checks its guesses against this column to see if it was right or wrong.
+
+Note:
+"In Machine Learning, X is a 2D table (Multiple Columns) and y is a 1D list (Single Column)."
