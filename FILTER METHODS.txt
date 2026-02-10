@@ -1,0 +1,182 @@
+             FILTER METHODS
+1.INFORMATION GAIN
+
+note:
+check me - we use this code(1) to allow the model to calculate the information gain and according to the best gain the model predicts it is the best feature so we write the code(2) you give now to make the model to choose the best feature without telling in the code by ourself.
+
+How your logic works in practice:
+The Model's Calculation: The code runs the entropy formula you shared to find the Information Gain for every single column.
+
+The "Unbiased" Choice: Like you said, you aren't telling the code "pick the Income column." Instead, the code looks at the scores (like the 0.99 you saw in the output) and picks the winners itself.
+
+The "K" Parameter: The only thing you decide is how many winners you want (the k=2 part).
+
+
+code(1):
+
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.datasets import load_iris
+iris = load_iris()
+X, y = iris.data, iris.target
+info_gain = mutual_info_classif(X, y)
+print("Information Gain for each feature:", info_gain)
+
+code(2):
+
+
+from sklearn.feature_selection import SelectKBest, mutual_info_classif
+
+# 1. Initialize the selector to pick the 'K' best features (e.g., K=2)
+# It uses the formula from your image (Information Gain) under the hood
+selector = SelectKBest(score_func=mutual_info_classif, k=2)
+
+# 2. Apply it to your data
+X_new = selector.fit_transform(X, y)
+
+# 3. See which features were kept
+selected_features = selector.get_support(indices=True)
+print("The indices of the best features are:", selected_features)
+
+
+2.CHI-SQUARE TEST
+
+Chi-squared test, or χ² test, helps in determining whether these two variables are associated with each other.
+
+
+Define Hypothesis:
+Null Hypothesis (H₀): The observed frequencies match the expected distribution.
+Alternative Hypothesis (H₁): The observed frequencies do not match the expected distribution.
+
+The Code for Chi-Square:
+
+from sklearn.feature_selection import SelectKBest, chi2
+
+# 1. Initialize selector using 'chi2' instead of 'mutual_info_classif'
+# This calculates the statistical significance for each categorical feature
+selector = SelectKBest(score_func=chi2, k=5)
+
+# 2. Fit and transform the data
+# Note: Data must be non-negative (no negative numbers) for Chi-Square
+X_new = selector.fit_transform(X, y)
+
+imp:
+ It chooses best data/feature for its target.
+ IG and Chi-Square are usually used separately as alternatives, not one after the other.
+
+
+PEARSON'S CORREALTION
+Pearson Correlation measures the linear relationship between two continuous (numerical) variables. It tells the model if one number goes up, does the other go up in a straight line?
+
+
+Key Properties of Pearson’s Correlation Coefficient
+1. Directionality: The sign of r shows the direction of the relationship
+
+Positive r means that as one variable increases, the other increases in a similar manner.
+Negative r means that as one variable increases, the other decreases.
+2. Magnitude: The magnitude of r shows the strength of the relationship
+
+Values closer to ±1 represent a stronger relationship.
+Values closer to 0 signify a weaker or no relationship between the variables.
+3. No Causation: Pearson’s correlation measures association but does not imply causation. Even if two variables are strongly correlated, it doesn’t mean that one causes the other to change.
+
+4. Symmetry: Pearson's correlation is symmetric which mean the correlation between X and Y is the same as that between Y and X. In other words, r(X, Y) = r(Y, X).
+
+5. Invariance: Pearson’s correlation remains unchanged under linear transformations of the data. This means scaling (multiplying by a constant) or shifting (adding a constant) the data does not affect the correlation.
+
+Why use it for Feature Selection?
+On your resume and in your code, Pearson Correlation is used as a Filter Method for two specific reasons:Removing Redundancy: 
+If Feature A and Feature B have a correlation of 0.95, they are telling the model the same thing. You should remove one to keep the model simple and fast.
+Finding Predictors: You check the correlation between a Feature (Income) and the Target (Loan Approved). A high correlation means that feature is a strong "signal" for your XGBoost model.
+
+code:
+In your project, you won't calculate this by hand. You will use the pandas library to see the "Correlation Matrix."
+
+# Assuming 'df' is your Bank Loan dataframe
+correlation_matrix = df.corr()
+
+# This shows how every column relates to the 'Loan_Status'
+target_correlation = correlation_matrix['Loan_Status'].sort_values(ascending=False)
+print(target_correlation)
+
+imp: 
+so we use this find which features are correlated if they are we neglect to other feature
+
+the 2-Step "Winner" Selection Process 
+Step 1 (Pearson): You identify that "Monthly Salary" and "Annual Salary" have a correlation of $1.0$. You now know you must "neglect" one. 
+Step 2 (IG or Chi-Square): You check which of the two has the higher Information Gain or Chi-Square score relative to the "Loan Approved" target.
+The Result: If "Monthly Salary" has an IG of $0.85$ and "Annual Salary" has an IG of $0.80$, you keep the Monthly one and drop the Annual one.
+
+
+FISHER'S TEST
+
+To compare the variability between two groups.
+To test for homogeneity of variances, which is an essential assumption in various statistical methods, like ANOVA or t-tests.
+
+What is Fisher’s Score?
+Fisher’s Score ranks features based on how well they can "separate" different categories.
+
+Imagine you are trying to separate "Loan Approved" from "Loan Rejected."
+
+Good Feature: The values for "Approved" are very different from the values for "Rejected" (e.g., Credit Scores are 750+ for approved and 500- for rejected). This gets a High Fisher Score.
+
+Bad Feature: The values are all mixed up for both groups (e.g., Age might be 30 for both approved and rejected). This gets a Low Fisher Score.
+
+
+code:
+from sklearn.feature_selection import SelectKBest, f_classif
+
+# 1. Initialize the selector using f_classif (ANOVA/Fisher logic)
+# This calculates how well each feature separates our 'Approved' vs 'Rejected' classes
+fisher_selector = SelectKBest(score_func=f_classif, k='all')
+
+# 2. Fit to your data (X = features, y = target)
+fisher_selector.fit(X, y)
+
+# 3. Get the scores
+scores = fisher_selector.scores_
+print("Fisher/ANOVA Scores:", scores)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
