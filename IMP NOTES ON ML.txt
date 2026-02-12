@@ -1,0 +1,57 @@
+IMP NOTES ON ML
+
+Since you are just starting ML, here are three things to notice in the code:
+
+train_test_split: We never show the model the "Test" data during training. We use it at the end to see if the model actually learned or just memorized.
+X vs y: By convention, X (uppercase) is a matrix of inputs, and y (lowercase) is a vector of outputs.
+Linearity: Linear Regression assumes that if you add 10 runs to the current score, the final score will likely increase by a fixed amount.
+
+
+🟢 Pandas (The Data Manager)
+Pandas is for cleaning and exploring your tables (DataFrames).
+
+pd.read_csv(): The "Open" button. It loads your data from a file into a Python table.
+
+df.head(): The "Quick Peek." Shows the first 5 rows so you can see if the data loaded correctly.
+
+df.info(): The "Health Check." Tells you which columns have missing values (NaN) and what type of data (numbers vs. words) they hold.
+
+df.describe(): The "Stat Summary." Instantly gives you the mean, min, max, and standard deviation of all your number columns.
+
+df.iloc[] / df.loc[]: The "Scalpel." Used to cut out specific rows or columns based on position (iloc) or name (loc).
+
+df.fillna(): The "Repair Kit." Fills in missing data with a specific value (like 0 or the average).
+
+df.groupby(): The "Segmenter." Groups data by a category (e.g., group by 'Team' to see the average score per team).
+
+pd.get_dummies(): The "Translator." Turns text categories (CSK, MI) into 1s and 0s so the math model can understand them.
+
+🔵 NumPy (The Math Engine)
+NumPy handles the heavy lifting of numbers and arrays.
+
+np.array(): The "Constructor." Converts a standard Python list into a high-performance NumPy array.
+
+np.arange(): The "Sequencer." Creates an array of numbers in order (e.g., 1 to 20).
+
+arr.reshape(): The "Transformer." Changes the shape of your data (e.g., turning a flat list of 12 numbers into a 3x4 grid) without changing the numbers.
+
+np.mean() / np.median(): The "Averages." Quickly finds the center point of your data.
+
+np.sum(): The "Totalizer." Adds up all numbers in an array—much faster than a Python for loop.
+
+np.random.rand(): The "Shuffler." Generates random numbers, which is vital for initializing models or shuffling data.
+
+🟡 Scikit-Learn (The ML Brain)
+This library provides the tools to actually build and test your "AI."
+
+train_test_split(): The "Exam Prep." It splits your data into two piles: one to study (Train) and one for the final exam (Test).
+
+model.fit(): The "Learning Phase." This is where the model looks at the training data and finds the patterns.
+
+model.predict(): The "Action Phase." This is where you give the model new data, and it gives you its best guess.
+
+model.score(): The "Report Card." Gives you a quick accuracy percentage on how well the model is performing.
+
+StandardScaler(): The "Leveler." If one column has small numbers (0-1) and another has huge numbers (10,000+), this scales them so the model doesn't get confused.
+
+mean_absolute_error(): The "Reality Check." Tells you exactly how many units (or runs, in your case) your predictions are off by on average.
