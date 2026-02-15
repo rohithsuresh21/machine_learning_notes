@@ -1,0 +1,20 @@
+LINEAR REGRESSION
+
+📘 Linear Regression: The Theory
+1. What is it?
+Linear Regression is a Supervised Learning algorithm used to predict a continuous numerical value. It assumes there is a direct, straight-line relationship between your input (Independent Variable) and your output (Dependent Variable).
+
+2. The Mathematical Equation
+At its heart, Linear Regression is just a simple geometry equation:  y=mx+c
+y (Target): The value you want to predict (e.g., Final Score).
+x (Feature): The data you already have (e.g., Current Overs).
+m (Coefficient/Slope): This represents the weight. It tells the model how much y changes for every 1 unit of x. (e.g., How many runs are usually scored per over).
+c (Intercept): The starting point. The value of y when x is zero.
+
+3. How does the model "Learn"?
+The model uses a method called Ordinary Least Squares (OLS).
+
+It draws a random line through your data points.
+It calculates the Residuals (the distance/error between the actual data point and the line).
+It squares those errors and adds them up (Sum of Squared Errors).
+It keeps tilting and moving the line until that total error is the smallest possible.
