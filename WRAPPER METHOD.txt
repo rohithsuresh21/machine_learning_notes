@@ -1,0 +1,84 @@
+              WRAPPER METHOD 
+RECURSIVE FEATURE ELIMINATION
+
+RFE is a greedy optimization algorithm. Instead of looking at statistical scores, it follows this process:
+
+Train: It trains the model on the full set of features.
+
+Rank: It ranks features based on their importance (e.g., coefficients or feature importance scores).
+
+Eliminate: It removes the least important feature(s).
+
+Repeat: It repeats this until it reaches the number of features you requested.     
+
+The "Cost" of RFE:
+Since you are a developer, you need to consider the trade-offs:
+
+Computationally Expensive: Because RFE trains the model many times (once for every feature it removes), it is much slower than Filter methods.
+
+Overfitting Risk: Because it is so focused on optimizing for one specific model, it can sometimes "over-tune" to your training data.
+
+
+code:
+from xgboost import XGBClassifier
+from sklearn.feature_selection import RFE
+
+# 1. Initialize the model you want to use for the "Wrapper"
+# XGBoost is great here because it calculates gain/importance automatically
+model = XGBClassifier()
+
+# 2. Initialize RFE
+# n_features_to_select: How many features you want to keep at the end
+# step: How many features to remove in each iteration (usually 1)
+rfe = RFE(estimator=model, n_features_to_select=3, step=1)
+
+# 3. Fit RFE to your training data
+rfe.fit(X, y)
+
+# 4. See which features were selected (True means kept)
+selected_features = X.columns[rfe.support_]
+print("Selected Features:", selected_features)
+
+# 5. See the ranking (1 means top-tier)
+print("Feature Ranking:", rfe.ranking_)
+
+
+Why this is different from the "Filter" methods
+When you use RFE, you are moving away from simple statistical tests and toward Model-Based selection:
+
+Interaction: RFE can discover that two features are powerful only when used together, whereas Pearson or Chi-Square might look at them one-by-one and miss that connection.
+
+Automatic Neglecting: Unlike Pearson, where you have to manually choose which correlated feature to drop, RFE will naturally drop the one that provides less "Gain" to the XGBoost model.
+
+Recursive Logic: It doesn't just drop the worst features once; it drops one, re-trains, and checks again to see how the importance has shifted.
+
+
+imp: RFE + xgboost ===> king
+ The RFE rejects if,The feature doesn't help XGBoost improve its accuracy. 
+
+In short, RFE rejects a feature because it provides the lowest Information Gain (or "Importance") to the XGBoost model during that specific round of training.
+
+The Wrapper/Embedded Method: XGBoost has its own internal "engine" that also calculates Information Gain (often called "Gain") to decide where to split its trees.
+to speed up RFE :
+# Removes 5 features at every step instead of 1
+rfe = RFE(estimator=model, n_features_to_select=10, step=5)
+has high accuracy
+
+
+
+
+
+
+conclusion:
+Instead of RFE, you use SelectFromModel. It "embeds" the selection into one single training session:
+
+from sklearn.feature_selection import SelectFromModel
+from xgboost import XGBClassifier
+
+# 1. Train the model ONCE (Embedded logic)
+model = XGBClassifier()
+
+# 2. Use SelectFromModel to "pick" features based on the training above
+# It uses the built-in IG/Importance scores
+selector = SelectFromModel(model, threshold="mean", prefit=False)
+X_selected = selector.fit_transform(X, y)
