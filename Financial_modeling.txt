@@ -1,0 +1,81 @@
+1. Model Selection: "Why did you choose the parameters (5,1,0) for your ARIMA model? How would the forecast change if you changed the 'p' (AR) value to 1 instead of 5?"
+ans:
+	I chose p=5 because stock markets operate on a 5-day trading week. By using 5 lags, the model can capture the weekly seasonality and momentum. If I reduced it to p=1, the model would only consider the previous day's price, making it highly sensitive to 'noise' or random fluctuations, which reduces its predictive power. Using 2 years of data gives us enough samples to reliably estimate these 5 parameters without overfitting.
+
+2. Stationarity: "What is a 'stationary' time series, and why is the 'I' (Integrated) component of ARIMA necessary for stock price data?"
+ans: 
+	A stationary series is one where properties like the mean and variance remain constant over time. Stock prices are naturally non-stationary due to trends and seasonality. ARIMA requires stationary data because it assumes that patterns found in the past will repeat in the future. We use the 'I' (Integrated) component to perform differencing (subtracting the previous value from the current one). This removes the trend and 'stabilizes' the mean, allowing the model to focus on the actual cyclical patterns rather than the direction of the price.
+
+3. Data Limitations: "Stock prices are often influenced by sudden news events (like an earnings report). How does an ARIMA model handle these 'shocks,' and what are its limitations compared to a model like an LSTM?"
+ans:
+	a) Short-term vs. Long-term: As you said, ARIMA lacks long-term memory. It's essentially a "regressive" model, meaning it eventually reverts to a mean or a trend line. It can't understand complex, non-linear patterns that a Neural Network (like an LSTM) could.
+
+	b) Linearity: ARIMA assumes a linear relationship between past and future values. Stock markets are often non-linear and chaotic, which is why your confidence interval (the shaded area) gets wider the further out you predict.
+
+4. Confidence Intervals: "What does the 95% confidence interval in your graph actually represent to a potential investor? If the shaded area is very wide, what does that tell you about your model's certainty?"
+ans:
+	The 95% confidence interval represents the range where the actual price is statistically likely to fall. A wide range indicates high volatility and lower confidence in a specific number. Conversely, a narrow range indicates that the model is more certain because the recent price movements have been stable. If the actual price falls outside a very narrow range, that is when the model 'fails' or encounters an anomaly it didn't expect.
+
+5. Evaluation: "How would you measure the accuracy of this model? If I gave you the actual prices for the 7 days you forecasted, which metric (e.g., RMSE, MAE) would you use to see how well you did?"
+ans:
+	To evaluate the model, I would use RMSE. Because RMSE squares the differences before averaging them, it gives a higher weight to large errors. In financial forecasting, large deviations are more risky than small ones, so RMSE is a better metric than MAE (Mean Absolute Error) for capturing those 'major failures' in prediction.
+
+
+6. Data Quality & Preprocessing
+"In your Data_Processor.py, you download data using yf.download. What happens if there are missing values (NaNs) in the stock data? How would that affect the ARIMA model, and how would you handle it in code?"
+ans: 
+	Missing values are dangerous because ARIMA relies on a continuous sequence of data (t, t-1, etc.). If there's a gap, the model essentially 'loses its place' in time, which creates noise and leads to inaccurate predictions. To handle this, I would use Pandas to detect these gaps. Instead of leaving them as NaN (which would crash the model) or filling them with 0 (which would create a massive artificial drop), I would use Forward Fill (ffill). This assumes the price stayed the same as the last recorded day, maintaining the pattern's connectivity without introducing 'garbage' data.
+
+
+7. Feature Engineering (The 'What Else' Question):
+ "Right now, your model only uses the Closing Price to predict the future. If you wanted to make the model more accurate, what other 'features' (pieces of data) would you include? (Think about Volume, Sentiment, or Technical Indicators).
+ans:
+	 I would use various columns like volume, etc and for deep ml answer I would use information gain or various filter methods to let the model to identify which columns has more information so that the model can improve by validating the errors 
+
+
+8. The Mathematical "Why"
+"You used np.log at the start and np.exp at the end. If you performed the RMSE calculation before using np.exp, would that RMSE value be useful to a trader? Why or why not?"
+ans:
+	If we calculate rmse before applying exp it would result in smaller error where lograthimic terms get smaller so that it adds less weight which would makes the model inverted bottleneck and gives wrong prediction
+
+9. Latency and LPU Architecture
+The Question: "You chose the llama-3.3-70b-versatile model on Groq. Why is an LPU (Language Processing Unit) like Groq better for this chatbot than a standard GPU (Graphics Processing Unit) that most people use for AI?"
+ans: 
+	While GPUs are great at parallel processing (doing many things at once, like rendering pixels), an LPU (Language Processing Unit) like Groq is designed specifically for Sequential Density. LLMs generate text one word (token) at a time, which is a sequential task. The LPU architecture reduces the 'bottleneck' of memory bandwidth, allowing the chatbot to respond with near-zero latency. For a financial app, this speed is crucial because users need quick analysis during fast-moving market sessions.
+
+10. "If you were to add a temperature parameter to your client.chat.completions.create call, would you set it to 0.1 (Low) or 0.9 (High) for a financial forecasting app? Explain your choice."	
+ans:
+	Pro-Tip: For financial or analytical tasks, you always want Low Temperature (0.1 - 0.2).
+
+Why? High temperature makes the model "creative" and "random." In finance, you don't want a creative AI; you want a factual, consistent AI. You want it to calculate the same way every time.
+
+11. Why pass stock prices in the prompt rather than training the model on them every day?
+ans:
+	a) Latency and Cost: Retraining (or "Fine-tuning") a model as large as Llama 3.3 takes hours or days and costs thousands of dollars in GPU compute. Stock prices change every second. By the time the model is finished training, the data is already obsolete.
+
+	b) Catastrophic Forgetting: If you constantly retrain a model on new numbers, it might eventually "forget" how to speak English or how to do general reasoning.
+
+	c) The "In-Context" Solution: Passing data in the prompt (RAG) allows the model to stay General Purpose. It uses its pre-trained "intelligence" to analyze "fresh data" provided at the moment of the request. This is why your chatbot is "Analytical"—it's a smart brain looking at a new spreadsheet every time you run it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
